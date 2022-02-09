@@ -1,57 +1,61 @@
-
-def binary(ipnew):
-    binary = ""
-    for i in ipnew:
-        bi = str(bin(i))[2:].zfill(8)
-        binary += bi+"."
-    return all_bin(binary[:-1])
+class Ipcalc():
     
-def all_bin(binary):
-    return "".join(binary.split("."))
-    
-def bin_dec(binary):
-    es = [str(binary[i:i + 8]) for i in range(0, len(binary), 8)]
-    return ".".join([str(int(i,2)) for i in es])
+    def __init__(self,ip,mask):
+        self.mask = int(mask)
+        ipnew = [int(i) for i in ip.split(".")]
+        print("ip address:",ip)
+        self.bin = Ipcalc.binary(ipnew)
+        print("network:",Ipcalc.netadd(self))
+        print("Subnet:",Ipcalc.subnet(self))
+        print("wildcard:",Ipcalc.wildcard(self))
+        print("\n")
+        print("Broadcast:",Ipcalc.broadd(self))
+        print("Hostmin",Ipcalc.hostmin(self))
+        print("Hostmax",Ipcalc.hostmax(self))
+        print("No of hosts Available:",Ipcalc.nohost(self))
 
-def netadd(binary,mask):
-    a = 32-mask
-    return bin_dec(binary) if mask==32 else bin_dec(str(binary[:-a])+str(binary[-a:]).replace('1','0'))
+    def binary(self):
+        binary = ""
+        for i in self:
+            bi = str(bin(i))[2:].zfill(8)
+            binary += bi+"."
+        return Ipcalc.all_bin(binary[:-1])
+        
+    def all_bin(self):
+        return "".join(self.split("."))
+        
+    def bin_dec(self):
+        es = [str(self[i:i + 8]) for i in range(0, len(self), 8)]
+        return ".".join([str(int(i,2)) for i in es])
 
-def subnet(binary,mask):
-    a = 32-mask
-    return bin_dec(str(binary[:-a]).replace('0','1')+str(binary[-a:]).replace('1','0'))
+    def netadd(self):
+        a = 32-self.mask
+        return Ipcalc.bin_dec(self.bin) if self.mask==32 else Ipcalc.bin_dec(str(self.bin[:-a])+str(self.bin[-a:]).replace('1','0'))
 
-def wildcard(binary,mask):
-    a = 32-mask
-    return bin_dec(str(binary[:-a]).replace('1','0')+str(binary[-a:]).replace('0','1'))
+    def subnet(self):
+        a = 32-self.mask
+        return Ipcalc.bin_dec(str(self.bin[:-a]).replace('0','1')+str(self.bin[-a:]).replace('1','0'))
 
-def broadd(binary,mask):
-    a = 32-mask
-    return bin_dec(binary) if mask==32 else bin_dec(str(binary[:-a])+str(binary[-a:]).replace('0','1'))
+    def wildcard(self):
+        a = 32-self.mask
+        return Ipcalc.bin_dec(str(self.bin[:-a]).replace('1','0')+str(self.bin[-a:]).replace('0','1'))
 
-def hostmax(binary,mask):
-    a = 32-mask
-    return bin_dec(binary) if mask==32 else bin_dec(str(binary[:-a])+str((binary[-a:]).replace('1','0')).replace('0','1',a-1))
+    def broadd(self):
+        a = 32-self.mask
+        return Ipcalc.bin_dec(self.bin) if self.mask==32 else self.bin_dec(str(self.bin[:-a])+str(self.bin[-a:]).replace('0','1'))
 
-def hostmin(binary,mask):
-    a = 32-mask
-    return bin_dec(binary) if mask==32 else bin_dec(str(binary[:-a])+str(binary[-a:]).replace('1','0')[:-1]+str(1))
+    def hostmax(self):
+        a = 32-self.mask
+        return Ipcalc.bin_dec(self.bin) if self.mask==32 else self.bin_dec(str(self.bin[:-a])+str((self.bin[-a:]).replace('1','0')).replace('0','1',a-1))
 
-def nohost(mask):
-    a = 32-mask
-    return 1 if mask==32 else pow(2,a)-2
+    def hostmin(self):
+        a = 32-self.mask
+        return Ipcalc.bin_dec(self.bin) if self.mask==32 else self.bin_dec(str(self.bin[:-a])+str(self.bin[-a:]).replace('1','0')[:-1]+str(1))
+
+    def nohost(self):
+        a = 32-self.mask
+        return 1 if self.mask==32 else pow(2,a)-2
 
 
 ip,mask = input("ip:").split("/")
-mask = int(mask)
-ipnew = [int(i) for i in ip.split(".")]
-print("ip address:",ip)
-binary = binary(ipnew)
-print("network:",netadd(binary,mask))
-print("Subnet:",subnet(binary,mask))
-print("wildcard:",wildcard(binary,mask))
-print("\n")
-print("Broadcast:",broadd(binary,mask))
-print("Hostmin",hostmin(binary,mask))
-print("Hostmax",hostmax(binary,mask))
-print("No of hosts Available:",nohost(mask))
+Ipcalc(ip,mask)
